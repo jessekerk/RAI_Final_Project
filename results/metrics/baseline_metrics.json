@@ -1,0 +1,11 @@
+{
+    "random_state": 42,
+    "test_size": 0.2,
+    "accuracy": 0.705,
+    "precision": 0.7755102040816326,
+    "recall": 0.8142857142857143,
+    "f1": 0.794425087108014,
+    "false_positive": 33,
+    "false_negative": 26,
+    "total_error_cost": 191
+}
