@@ -1,3 +1,5 @@
 numpy
 scikit-learn
 ucimlrepo
+scipy
+pandas
