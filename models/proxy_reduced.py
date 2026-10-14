@@ -2,8 +2,6 @@ import pandas as pd
 
 from common import load_data, run_model, write_results
 
-from models.common import remap_column_names
-
 REMOVE_IN_VARIANT: list[list[str]] = [
     ['age', 'employment_since'],
     ['age', 'housing'],
@@ -25,9 +23,7 @@ def run_for_variant(X_variant: pd.DataFrame, y: pd.DataFrame, remove_in_variant:
 
 
 def main():
-    X, y, _ = load_data()
-
-    X = remap_column_names(X)
+    X, y, _ = load_data(should_remap_column_names = True)
 
     for remove_in_variant in REMOVE_IN_VARIANT:
         X_variant = X.drop(columns=remove_in_variant)

@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Tuple, Any
 
 import numpy as np
-import pandas
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
@@ -47,7 +46,7 @@ COLUMN_NAMES: list[str] = [
 ]
 
 
-def load_data() -> Tuple[pandas.DataFrame, pandas.DataFrame, pandas.DataFrame]:
+def load_data(should_remap_column_names: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     # load dateset
 
     german_credit = fetch_ucirepo(id=144)
@@ -62,9 +61,12 @@ def load_data() -> Tuple[pandas.DataFrame, pandas.DataFrame, pandas.DataFrame]:
     # convert good/bad credit score
     y = y.map({1: 1, 2: 0})
 
+    if should_remap_column_names:
+        X = remap_column_names(X)
+
     return X, y, german_credit.variables
 
-def remap_column_names(X: pandas.DataFrame) -> pandas.DataFrame:
+def remap_column_names(X: pd.DataFrame) -> pd.DataFrame:
     mapping = {
         f"Attribute{i}": name
         for i, name in enumerate(COLUMN_NAMES, start=1)
@@ -72,7 +74,7 @@ def remap_column_names(X: pandas.DataFrame) -> pandas.DataFrame:
     return X.rename(columns=mapping, errors="raise")
 
 
-def identify_features(X: pandas.DataFrame) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
+def identify_features(X: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     # identify categorical/numerical features
 
     categorical_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
@@ -87,13 +89,13 @@ def identify_features(X: pandas.DataFrame) -> Tuple[pandas.DataFrame, pandas.Dat
 
     return categorical_features, numerical_features
 
-def split_data(X: pandas.DataFrame, y: pandas.DataFrame) -> Tuple[pandas.DataFrame, pandas.DataFrame, pandas.DataFrame, pandas.DataFrame]:
+def split_data(X: pd.DataFrame, y: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE, stratify=y
     )
     return X_train, X_test, y_train, y_test
 
-def create_model(X: pandas.DataFrame) -> Pipeline:
+def create_model(X: pd.DataFrame) -> Pipeline:
     # identify categorical/numerical features
 
     categorical_features, numerical_features = identify_features(X)
