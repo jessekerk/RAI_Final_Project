@@ -3,7 +3,7 @@ import json
 
 import numpy as np
 
-from ucimlrepo import fetch_ucirepo
+from common import RANDOM_STATE, TEST_SIZE, load_data, split_data
 
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
@@ -15,29 +15,11 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
-RANDOM_STATE = 42
-TEST_SIZE = 0.20
-
-
-#load dateset
-
-german_credit = fetch_ucirepo(id=144)
-
-X = german_credit.data.features.copy()
-y = german_credit.data.targets.iloc[:, 0].copy()
-
-print("Dataset shape:", X.shape)
-print("\nOriginal target distribution:")
-print(y.value_counts())
-
-
-#convert good/bad credit score
-y = y.map({1: 1, 2: 0})
+X, y, _ = load_data()
 
 
 #identify categorical/numerical features
@@ -55,9 +37,7 @@ print(numerical_features)
 
 #train/test slit
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE, stratify=y
-)
+X_train, X_test, y_train, y_test = split_data(X, y)
 
 
 #preprocessing
