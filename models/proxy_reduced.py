@@ -1,9 +1,6 @@
-from pathlib import Path
-import json
-
 import pandas as pd
 
-from common import load_data, run_model
+from common import load_data, run_model, write_results
 
 from models.common import remap_column_names
 
@@ -17,22 +14,14 @@ REMOVE_IN_VARIANT: list[list[str]] = [
 
 
 def run_for_variant(X_variant: pd.DataFrame, y: pd.DataFrame, remove_in_variant: list[str]) -> None:
-    variant_name = "_".join(remove_in_variant)
+    variant_name = "_".join(name.replace("_", "") for name in remove_in_variant)
 
     results = run_model(X_variant, y, f"Proxy Reduced {variant_name}")
+    results["removed_features"] = remove_in_variant
 
-    project_root = Path(__file__).resolve().parent.parent
+    file_name = f"proxy_reduced_{variant_name}.json"
 
-    results_directory = project_root / "results" / "metrics"
-    results_directory.mkdir(parents=True, exist_ok=True)
-
-    output_file = results_directory / f"proxy_reduced_{variant_name}.json"
-
-    with open(output_file, "w") as f:
-        json.dump(results, f, indent=4)
-
-    print(f"\nResults saved to: {output_file}")
-
+    write_results(file_name, results)
 
 
 def main():

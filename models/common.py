@@ -1,10 +1,10 @@
+import json
+from pathlib import Path
 from typing import Tuple, Any
 
 import numpy as np
 import pandas
 import pandas as pd
-from ucimlrepo import fetch_ucirepo
-from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -15,8 +15,10 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from ucimlrepo import fetch_ucirepo
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
@@ -190,3 +192,16 @@ def run_model(X: pd.DataFrame, y: pd.DataFrame, model_name: str) -> dict[str, in
     }
 
     return results
+
+def write_results(file_name: str, results: dict[str, int | float | Any]) -> None:
+    project_root = Path(__file__).resolve().parent.parent
+
+    results_directory = project_root / "results" / "metrics"
+    results_directory.mkdir(parents=True, exist_ok=True)
+
+    output_file = results_directory / file_name
+
+    with open(output_file, "w") as f:
+        json.dump(results, f, indent=4)
+
+    print(f"\nResults saved to: {output_file}")
