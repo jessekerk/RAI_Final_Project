@@ -1,0 +1,30 @@
+{
+    "random_state": 42,
+    "test_size": 0.2,
+    "age_cutoff": 35,
+    "threshold": 0.5,
+    "accuracy": 0.79,
+    "precision": 0.8181818181818182,
+    "recall": 0.9,
+    "f1": 0.8571428571428571,
+    "roc_auc": 0.8251190476190476,
+    "false_positive": 28,
+    "false_negative": 14,
+    "total_error_cost": 154,
+    "age_groups": {
+        "<35": {
+            "applicants": 109,
+            "approval_rate": 0.7247706422018348,
+            "fpr_good_denied": 0.1267605633802817,
+            "fnr_bad_approved": 0.4473684210526316,
+            "cost_per_applicant": 0.8623853211009175
+        },
+        ">=35": {
+            "applicants": 91,
+            "approval_rate": 0.8241758241758241,
+            "fpr_good_denied": 0.07246376811594203,
+            "fnr_bad_approved": 0.5,
+            "cost_per_applicant": 0.6593406593406593
+        }
+    }
+}
