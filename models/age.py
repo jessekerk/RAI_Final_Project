@@ -38,8 +38,8 @@ german_credit = fetch_ucirepo(id=144)
 X = german_credit.data.features.copy()
 y = german_credit.data.targets.iloc[:, 0].copy()
 
-# 1 = bad credit, 0 = good credit (original: 1 = good, 2 = bad)
-y = y.map({1: 0, 2: 1})
+# 0 = bad credit, 1 = good credit)
+y = y.map({1: 1, 2: 0})
 
 # age is the sensitive attribute: used only for auditing, never as a model input
 age_group = np.where(X["Attribute13"] < AGE_CUTOFF, "<35", ">=35")

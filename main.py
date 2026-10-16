@@ -1,1 +1,156 @@
-#hello
+import numpy as np
+
+from models.common import (
+    AGE_CUTOFF,
+    RANDOM_STATE,
+    load_data,
+    split_data,
+    create_model,
+    select_threshold,
+    evaluate_performance,
+    write_results,
+)
+from results.fairness import evaluate_fairness
+
+
+MODELS = {
+    "baseline": [],
+    "age_unaware": [
+        "age",
+    ],
+    "proxy_reduced": [
+        "age",
+        "employment_since",
+        "housing",
+        "personal_status_sex",
+        "residence_since",
+    ],
+}
+
+
+def main():
+    # Load dataset
+    X, y, _ = load_data(should_remap_column_names=True)
+
+    # Age is retained for fairness auditing
+    age_groups = np.where(
+        X["age"] < AGE_CUTOFF,
+        "under_35",
+        "35_plus",
+    )
+
+    # Split once for all models
+    train_idx, val_idx, test_idx = split_data(X, y, age_groups)
+
+    all_results = {}
+
+    for model_name, removed_features in MODELS.items():
+        print(f"\n{'=' * 50}")
+        print(f"MODEL: {model_name}")
+        print(f"{'=' * 50}")
+
+        # Remove features for this model
+        X_model = X.drop(columns=removed_features)
+
+        # Use identical row indices for all models
+        X_train = X_model.iloc[train_idx]
+        X_val = X_model.iloc[val_idx]
+        X_test = X_model.iloc[test_idx]
+
+        y_train = y.iloc[train_idx]
+        y_val = y.iloc[val_idx]
+        y_test = y.iloc[test_idx]
+
+        # Create and train model
+        model = create_model(X_train)
+        model.fit(X_train, y_train)
+
+        # Select threshold on validation data
+        threshold = select_threshold(model, X_val, y_val)
+
+        # Predict on test set
+        probabilities = model.predict_proba(X_test)[:, 1]
+
+        y_pred = (probabilities >= threshold).astype(int)
+
+        # Standard performance evaluation
+        performance = evaluate_performance(
+            y_test,
+            y_pred,
+            probabilities,
+        )
+
+        # Fairness evaluation
+        fairness = evaluate_fairness(
+            y_test,
+            y_pred,
+            age_groups[test_idx],
+        )
+
+        # Combine results
+        results = {
+            "model": model_name,
+            "removed_features": removed_features,
+            "random_state": RANDOM_STATE,
+            "age_cutoff": AGE_CUTOFF,
+            "train_size": len(train_idx),
+            "validation_size": len(val_idx),
+            "test_size": len(test_idx),
+            "threshold": threshold,
+            "performance": performance,
+            "fairness": fairness,
+        }
+
+        all_results[model_name] = results
+
+        # Save individual model results
+        write_results(
+            f"{model_name}_metrics.json",
+            results,
+        )
+
+        # Print performance
+        print(f"\nThreshold: {threshold:.2f}")
+        print(f"Accuracy: {performance['accuracy']:.3f}")
+        print(f"Precision: {performance['precision']:.3f}")
+        print(f"Recall: {performance['recall']:.3f}")
+        print(f"F1-score: {performance['f1']:.3f}")
+        print(f"ROC-AUC: {performance['roc_auc']:.3f}")
+
+        print(f"Total error cost: {performance['total_error_cost']}")
+
+        # Print fairness
+        print("\n--- Fairness ---")
+
+        print(
+            "Demographic parity difference:",
+            round(
+                fairness["demographic_parity_difference"],
+                3,
+            ),
+        )
+
+        eo = fairness["equal_opportunity_difference"]
+
+        print(
+            "Equal opportunity difference:",
+            round(eo, 3) if eo is not None else "Undefined",
+        )
+
+        for group, metrics in fairness["age_groups"].items():
+            print(f"\nAge group: {group}")
+            print(f"Applicants: {metrics['applicants']}")
+            print(f"Approval rate: {metrics['approval_rate']:.3f}")
+            print(f"Cost per applicant: {metrics['cost_per_applicant']:.3f}")
+
+    # Save combined results
+    write_results(
+        "all_models_metrics.json",
+        all_results,
+    )
+
+    print("\nAll experiments completed.")
+
+
+if __name__ == "__main__":
+    main()
