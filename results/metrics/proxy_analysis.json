@@ -1,0 +1,19 @@
+{
+    "employment_since": {
+        "measure": "cramers_v",
+        "value": 0.39278163223846024
+    },
+    "housing": {
+        "measure": "cramers_v",
+        "value": 0.2657025888398297
+    },
+    "personal_status_sex": {
+        "measure": "cramers_v",
+        "value": 0.27294827047206605
+    },
+    "residence_since": {
+        "measure": "spearman_rho",
+        "value": 0.23409792139923688,
+        "p_value": 2.0235938434744724e-11
+    }
+}

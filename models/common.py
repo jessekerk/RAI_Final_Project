@@ -85,11 +85,12 @@ def identify_features(X):
     return categorical_features, numerical_features
 
 
-def split_data(X, y, age_groups):
+def split_data(X, y, age_groups, random_state=RANDOM_STATE):
     """
-    Create a shared 80/10/10 train/validation/test split.
-    Stratify by both target and age group to help
-    preserve subgroup representation.
+    Shared 80/10/10 train/validation/test split.
+
+    The same random_state produces identical row indices
+    for all models.
     """
 
     indices = np.arange(len(X))
@@ -100,14 +101,14 @@ def split_data(X, y, age_groups):
     train_idx, temp_idx = train_test_split(
         indices,
         test_size=0.20,
-        random_state=RANDOM_STATE,
+        random_state=random_state,
         stratify=stratification,
     )
 
     val_idx, test_idx = train_test_split(
         temp_idx,
         test_size=0.50,
-        random_state=RANDOM_STATE,
+        random_state=random_state,
         stratify=stratification[temp_idx],
     )
 

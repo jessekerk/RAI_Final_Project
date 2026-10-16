@@ -40,5 +40,65 @@
         },
         "demographic_parity_difference": 0.09420289855072472,
         "equal_opportunity_difference": 0.05714285714285716
+    },
+    "intersectional": {
+        "35_plus_A91": {
+            "applicants": 7,
+            "good_credit": 3,
+            "bad_credit": 4,
+            "sufficient_support": false
+        },
+        "35_plus_A92": {
+            "applicants": 12,
+            "good_credit": 10,
+            "bad_credit": 2,
+            "sufficient_support": false
+        },
+        "35_plus_A93": {
+            "applicants": 26,
+            "good_credit": 22,
+            "bad_credit": 4,
+            "sufficient_support": false
+        },
+        "35_plus_A94": {
+            "applicants": 1,
+            "good_credit": 0,
+            "bad_credit": 1,
+            "sufficient_support": false
+        },
+        "under_35_A91": {
+            "applicants": 1,
+            "good_credit": 0,
+            "bad_credit": 1,
+            "sufficient_support": false
+        },
+        "under_35_A92": {
+            "applicants": 24,
+            "good_credit": 16,
+            "bad_credit": 8,
+            "sufficient_support": true,
+            "approval_rate": 0.5416666666666666,
+            "true_positive_rate": 0.6875,
+            "false_positive_rate": 0.25,
+            "false_negative_rate": 0.3125,
+            "cost_per_applicant": 0.625
+        },
+        "under_35_A93": {
+            "applicants": 21,
+            "good_credit": 14,
+            "bad_credit": 7,
+            "sufficient_support": true,
+            "approval_rate": 0.7142857142857143,
+            "true_positive_rate": 0.7857142857142857,
+            "false_positive_rate": 0.5714285714285714,
+            "false_negative_rate": 0.21428571428571427,
+            "cost_per_applicant": 1.0952380952380953
+        },
+        "under_35_A94": {
+            "applicants": 8,
+            "good_credit": 5,
+            "bad_credit": 3,
+            "sufficient_support": false
+        }
     }
 }

@@ -42,5 +42,65 @@
         },
         "demographic_parity_difference": 0.05716586151368763,
         "equal_opportunity_difference": 0.02857142857142858
+    },
+    "intersectional": {
+        "35_plus_A91": {
+            "applicants": 7,
+            "good_credit": 3,
+            "bad_credit": 4,
+            "sufficient_support": false
+        },
+        "35_plus_A92": {
+            "applicants": 12,
+            "good_credit": 10,
+            "bad_credit": 2,
+            "sufficient_support": false
+        },
+        "35_plus_A93": {
+            "applicants": 26,
+            "good_credit": 22,
+            "bad_credit": 4,
+            "sufficient_support": false
+        },
+        "35_plus_A94": {
+            "applicants": 1,
+            "good_credit": 0,
+            "bad_credit": 1,
+            "sufficient_support": false
+        },
+        "under_35_A91": {
+            "applicants": 1,
+            "good_credit": 0,
+            "bad_credit": 1,
+            "sufficient_support": false
+        },
+        "under_35_A92": {
+            "applicants": 24,
+            "good_credit": 16,
+            "bad_credit": 8,
+            "sufficient_support": true,
+            "approval_rate": 0.5833333333333334,
+            "true_positive_rate": 0.6875,
+            "false_positive_rate": 0.375,
+            "false_negative_rate": 0.3125,
+            "cost_per_applicant": 0.8333333333333334
+        },
+        "under_35_A93": {
+            "applicants": 21,
+            "good_credit": 14,
+            "bad_credit": 7,
+            "sufficient_support": true,
+            "approval_rate": 0.7619047619047619,
+            "true_positive_rate": 0.8571428571428571,
+            "false_positive_rate": 0.5714285714285714,
+            "false_negative_rate": 0.14285714285714285,
+            "cost_per_applicant": 1.0476190476190477
+        },
+        "under_35_A94": {
+            "applicants": 8,
+            "good_credit": 5,
+            "bad_credit": 3,
+            "sufficient_support": false
+        }
     }
 }
