@@ -1,5 +1,5 @@
 import numpy as np
-
+from results.intersectional import evaluate_intersectional
 from models.common import (
     AGE_CUTOFF,
     RANDOM_STATE,
@@ -29,17 +29,16 @@ MODELS = {
 
 
 def main():
-    # Load dataset
     X, y, _ = load_data(should_remap_column_names=True)
 
-    # Age is retained for fairness auditing
+    #age retained for fairness auditing
     age_groups = np.where(
         X["age"] < AGE_CUTOFF,
         "under_35",
         "35_plus",
     )
 
-    # Split once for all models
+    #split once for all models
     train_idx, val_idx, test_idx = split_data(X, y, age_groups)
 
     all_results = {}
@@ -49,10 +48,10 @@ def main():
         print(f"MODEL: {model_name}")
         print(f"{'=' * 50}")
 
-        # Remove features for this model
+        #remove features for this model
         X_model = X.drop(columns=removed_features)
 
-        # Use identical row indices for all models
+        #use identical row indices for all models
         X_train = X_model.iloc[train_idx]
         X_val = X_model.iloc[val_idx]
         X_test = X_model.iloc[test_idx]
@@ -61,33 +60,41 @@ def main():
         y_val = y.iloc[val_idx]
         y_test = y.iloc[test_idx]
 
-        # Create and train model
+        #create and train model
         model = create_model(X_train)
         model.fit(X_train, y_train)
 
-        # Select threshold on validation data
+        #select threshold on validation data
         threshold = select_threshold(model, X_val, y_val)
 
-        # Predict on test set
+        #predict on test set
         probabilities = model.predict_proba(X_test)[:, 1]
 
         y_pred = (probabilities >= threshold).astype(int)
 
-        # Standard performance evaluation
+        #standard performance evaluation
         performance = evaluate_performance(
             y_test,
             y_pred,
             probabilities,
         )
 
-        # Fairness evaluation
+        #fairness eval
         fairness = evaluate_fairness(
             y_test,
             y_pred,
             age_groups[test_idx],
         )
 
-        # Combine results
+        #intersectional analysis
+        intersectional = evaluate_intersectional(
+            y_test,
+            y_pred,
+            age_groups[test_idx],
+            X.iloc[test_idx]["personal_status_sex"],
+        )
+
+        #combine results
         results = {
             "model": model_name,
             "removed_features": removed_features,
@@ -99,17 +106,18 @@ def main():
             "threshold": threshold,
             "performance": performance,
             "fairness": fairness,
+            "intersectional": intersectional,
         }
 
         all_results[model_name] = results
 
-        # Save individual model results
+        #individual model results
         write_results(
             f"{model_name}_metrics.json",
             results,
         )
 
-        # Print performance
+        #performance
         print(f"\nThreshold: {threshold:.2f}")
         print(f"Accuracy: {performance['accuracy']:.3f}")
         print(f"Precision: {performance['precision']:.3f}")
@@ -119,7 +127,7 @@ def main():
 
         print(f"Total error cost: {performance['total_error_cost']}")
 
-        # Print fairness
+        #fairness
         print("\n--- Fairness ---")
 
         print(
@@ -143,7 +151,7 @@ def main():
             print(f"Approval rate: {metrics['approval_rate']:.3f}")
             print(f"Cost per applicant: {metrics['cost_per_applicant']:.3f}")
 
-    # Save combined results
+    #results
     write_results(
         "all_models_metrics.json",
         all_results,
